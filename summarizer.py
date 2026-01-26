@@ -2,33 +2,34 @@
 Document Summarization Module
 
 This module provides functionality to generate summaries of document text
-using Google's Flan-T5-Large model, an instruction-tuned language model.
+using the DistilBART CNN/DailyMail model
+(`sshleifer/distilbart-cnn-6-6`), a lightweight abstractive summarization model.
 
-Flan-T5 Overview:
------------------
-Flan-T5 is an enhanced version of T5 (Text-to-Text Transfer Transformer) that has
-been fine-tuned on a large mixture of tasks with instructions. Unlike models
-trained only for summarization, Flan-T5 can follow specific instructions like
-"Summarize this financial report focusing on key metrics" which produces more
-relevant and contextual summaries.
+Model Overview:
+---------------
+DistilBART is a distilled version of Facebook's BART model, fine-tuned on the
+CNN/DailyMail summarization dataset. It is optimized for generating concise,
+coherent summaries of long-form text.
 
-Key advantages for financial documents:
-- Instruction-following capability allows domain-specific prompts
-- Better understanding of context and relevance
-- Can be guided to focus on specific aspects (metrics, risks, outlook, etc.)
+Key characteristics:
+- Abstractive summarization (not extractive)
+- Optimized for news-style and report-style text
+- Faster inference compared to full BART models
+- Not instruction-tuned (prompt text is treated as input text)
 
 Handling Long Documents:
 ------------------------
-Flan-T5 has a default input length of 512 tokens. For longer documents, this module
-implements a hierarchical summarization approach:
-1. Split document into overlapping chunks (to preserve context at boundaries)
-2. Summarize each chunk independently with financial-focused prompts
-3. Concatenate chunk summaries
-4. If result is still too long, recursively summarize the summaries
+DistilBART has a maximum input length of approximately 1024 tokens.
+For longer documents, this module implements hierarchical summarization:
 
-This approach preserves information from all parts of the document while
-staying within model constraints.
+1. Split the document into overlapping token-based chunks
+2. Summarize each chunk independently
+3. Concatenate intermediate summaries
+4. Recursively summarize until the result fits within model limits
+
+This ensures coverage of the entire document while respecting model constraints.
 """
+
 
 from typing import Optional, List, Tuple
 import logging
